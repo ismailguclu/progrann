@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Project datasets
+/data
+
+# Project trash tests
+/tests
+
+# i2b2 evaluation
+/i2b2_evaluation_scripts

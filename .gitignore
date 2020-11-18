@@ -136,3 +136,7 @@ dmypy.json
 
 # i2b2 evaluation
 /i2b2_evaluation_scripts
+
+# code scripts
+code/preprocessing/special_cases.py
+/code/preprocessing/rules.py

@@ -23,7 +23,7 @@ def glue_tokens(doc):
     return doc
 
 fn_path = "./data/training/"
-target_path = "./data/training-pandas/"
+target_path = "./data/training-df/"
 files = [f for f in os.listdir(fn_path) if os.path.isfile(os.path.join(fn_path, f))]
 files.sort()
 
@@ -54,50 +54,44 @@ nlp.tokenizer.suffix_search = suffix_regex.search
 for sc in SPECIAL_CASES_LIST:
     nlp.tokenizer.add_special_case(sc[0], sc[1])
 
-counter = 0
-print(files.index("256-02.xml")) 
-for fn in files[378:]:
-    print("---------------------------------" + fn)
-    with open(fn_path + fn) as file:
-        content = file.read()
+problem_files = ["180-03.xml", "256-02.xml", "200-04.xml", "218-02.xml"]
+for fn in files[450:]:
+    if fn not in problem_files:
+        with open(fn_path + fn) as file:
+            content = file.read()
 
-    soup = BeautifulSoup(content, "xml")
-    text = soup.TEXT.text
-    new_text = text.lstrip("\n")
-    diff_char = len(text) - len(new_text)
-    entities = [(int(tag["start"]), int(tag["end"]), tag["TYPE"]) 
-                for tag in soup.TAGS.find_all()]
+        soup = BeautifulSoup(content, "xml")
+        text = soup.TEXT.text
+        new_text = text.lstrip("\n")
+        diff_char = len(text) - len(new_text)
+        entities = [(int(tag["start"]), int(tag["end"]), tag["TYPE"], tag["text"]) 
+                    for tag in soup.TAGS.find_all()]
 
-    new_entities = []
-    for start, end, label in entities:
-        n_start, n_end = start-diff_char, end-diff_char
-        new_entities.append((n_start, n_end, label))
+        new_entities = []
+        for start, end, label, e_text in entities:
+            n_start, n_end = start-diff_char, end-diff_char
+            new_entities.append((n_start, n_end, label, e_text))
 
-    new_text = new_text.rstrip("\n")
-    entity_placer = EntityPlacer(new_entities)
+        new_text = new_text.rstrip("\n")
+        entity_placer = EntityPlacer(new_entities)
 
-    #print(nlp.tokenizer.explain(new_text))
-    if fn in MERGE_DICT:
-        nlp.add_pipe(glue_tokens, name="glue")
-        nlp.add_pipe(entity_placer, name="placer", last=True)
-    else:
-        nlp.add_pipe(entity_placer, name="placer", last=True)
-    Doc.set_extension("fn", default=fn)
-    doc = nlp(new_text)
-    
+        if fn in MERGE_DICT:
+            nlp.add_pipe(glue_tokens, name="glue")
+            nlp.add_pipe(entity_placer, name="placer", last=True)
+        else:
+            nlp.add_pipe(entity_placer, name="placer", last=True)
+        Doc.set_extension("fn", default=fn)
+        doc = nlp(new_text)
+        
+        for pipe in nlp.pipe_names:
+            if pipe not in STANDARD_PIPE:
+                nlp.remove_pipe(pipe)
+        Doc.remove_extension("fn")
 
-    for pipe in nlp.pipe_names:
-        if pipe not in STANDARD_PIPE:
-            nlp.remove_pipe(pipe)
-    Doc.remove_extension("fn")
-
-    #print(fn + "Number of faulty: " + str(entity_placer.faulty))
-    if entity_placer.faulty > 0:
-        counter += 1
-    # df = pandas.DataFrame([(ent.text, ent.ent_iob_, ent.ent_type_) 
-    #                         for ent in doc], 
-    #                         columns = ["Token", "BIO", "Type"])
-    # df["BIO"] = df["BIO"].replace(r'^\s*$', "O", regex=True)
-    # df["BIO-Type"] = df[["BIO", "Type"]].apply(glue_bio_type, axis=1) 
-    # df.to_csv(target_path+fn, header=None, index=None, sep='\t')
-print(counter)
+        df = pandas.DataFrame([(ent.text, ent.pos_, ent.ent_iob_, ent.ent_type_) 
+                                for ent in doc], 
+                                columns = ["Token", "POS", "BIO", "Type"])
+        df["BIO"] = df["BIO"].replace(r'^\s*$', "O", regex=True)
+        df["BIO-Type"] = df[["BIO", "Type"]].apply(glue_bio_type, axis=1) 
+        target = fn.split(".")[0]
+        df.to_csv(target_path+target, header=None, index=None, sep='\t')

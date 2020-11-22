@@ -55,7 +55,7 @@ for sc in SPECIAL_CASES_LIST:
     nlp.tokenizer.add_special_case(sc[0], sc[1])
 
 problem_files = ["180-03.xml", "256-02.xml", "200-04.xml", "218-02.xml"]
-for fn in files[450:]:
+for fn in files:
     if fn not in problem_files:
         with open(fn_path + fn) as file:
             content = file.read()

@@ -16,7 +16,5 @@ class EntityPlacer(object):
                 elif count_ending_spaces > 0:
                     new_end = end + count_ending_spaces
                     span = doc.char_span(start, new_end, label=label)
-                else:
-                    print(doc.char_span(start, end, label=label))
             doc.ents = list(doc.ents) + [span]
         return doc

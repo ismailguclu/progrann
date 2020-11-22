@@ -88,4 +88,7 @@ SPECIAL_CASES_LIST = [
     ("U.,RNC", [{ORTH: "U"}, {ORTH: "."}, {ORTH: ","}, {ORTH: "RNC"}]),
     ("NOTE.GCC", [{ORTH: "NOTE"}, {ORTH: "."}, {ORTH: "GCC"}]),
     ("GCCfor", [{ORTH: "GCC"}, {ORTH: "for"}]),
+    ("HCC3", [{ORTH: "HCC"}, {ORTH: "3"}]),
+    ("PLAN88F", [{ORTH: "PLAN"}, {ORTH: "88"}, {ORTH: "F"}]),
+    ("20626842267", [{ORTH: "2062"}, {ORTH: "6842267"}]),
 ]

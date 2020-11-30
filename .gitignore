@@ -140,3 +140,6 @@ dmypy.json
 # code scripts
 /code/preprocessing/special_cases.py
 /code/preprocessing/rules.py
+
+# VS studio stuff
+.vscode/

@@ -79,7 +79,7 @@ def train_model(X_train, y_train, k=3, n_iter=5):
    print("Best parameters: ", rs.best_params_)
    print("Best f1-score: ", rs.best_score_)
 
-   with open(MODEL_PATH + "/final_crf_model.pkl", "wb") as f:
+   with open(MODEL_PATH + "/3x5_crf_model.pkl", "wb") as f:
       pickle.dump(crf, f)
 
    return crf

@@ -130,6 +130,7 @@ dmypy.json
 
 # Project datasets
 /data
+/data-rumc
 
 # Project trash tests
 /tests

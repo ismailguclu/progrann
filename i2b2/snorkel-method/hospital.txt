@@ -1,0 +1,651 @@
+KH
+VALLEY LANE
+GMH
+GLENN HELEN
+ANC
+POLK GENERAL HOSPITAL
+Hartsville General Hospital
+RYBURY HOSPITAL
+Marianjoy Rehabilitation Hospital
+Duluth Clinic-Floodwood
+GRIFFIN NURSING CENTER
+Pullman
+GRANITE COUNTY MEMORIAL
+johnson rest home
+Kekela
+Hospital De Doctor Pila
+Ashley County Medical Center
+Grafton State Hospital
+Gadsden Medical
+Copley Hospital
+WFP
+ST LUCIA
+Elk Ridge Health Center
+BH
+GH
+Holy Cross
+KRMC
+Grafton State
+Parkview Haven
+Valley County
+Skiff
+Davis Monthan Hospital
+Manamana
+Clarkfield
+WISNER FAMILY PRACTICE
+Lamoni Nursing Rehabilitation
+GRANITE
+Parker Hospital
+Lee County Community Hospital
+Eye Specialties
+BELLFLOWER DOCTORS HOSPITAL
+BCH
+Ochsner Health Center Denham Springs
+BAPTIST MEMORIAL HOSPITAL
+HIGHLAND HOSITAL
+SABINE MEDICAL CENTER
+Valley County Hospital
+NVH
+Sheboygan Memorial Medical Center
+Brown Hospital
+HMS
+NORTHERN STATE HOSPITAL
+MEC
+HUNTINGTON
+PREAKNESS HEALTHCARE CENTER
+Mauston
+Wilson Medical Center
+Mary
+BMH
+Philadelphia State Hospital
+Campellton-Graceville Hospital
+Veterans Administration Roseburg Healthcare System
+NIHC
+Hospital De Distrito
+Campbell
+STONYBROOK
+Baycoast Medical Center
+FCH
+FREEPORT MEMORIAL HOSPITAL
+Madison Medical Center
+St. Mary's
+FSM
+GSH
+Clinica Rovira
+GCH
+Nutfield Surgicenter
+SNC
+WMC
+MIDLAND
+FOLSOM CONVALESCENT HOSPITAL
+Potomac Valley Hospital
+Glenbrook Hospital
+HMC
+BARROW MEDICAL CENTER
+SAINT LUKE'S-ROOSEVELT HOSPITAL CENTER
+TRIBAL
+Muncy Valley Hospital
+MOUNTAIN SIDE
+WCH
+Marquette
+FORT WASHINGTON HOSPITAL
+HCH
+Newton Hosp
+Langmack Hospital
+Correction Hospital
+Salvation Army Hospital
+Gadsden Medical Center
+Holden District Hospital
+SBH
+McCaw Family Medicine
+WSH
+Hospital Regional Universitario
+WILLOW GARDENS CARE CENTER
+FMH
+GHIC
+Fremont Medical Center
+LBH
+Lakeland Hospital
+Muscatine Health
+Heartland County Clinic
+Buzan Chiropractic Clinic
+Atlantic North Rehabilitation
+Vallejo General Hospital
+LH
+RGH
+DDCH
+Redwood Area Hospital
+Rusk State
+Muscatine Health Center
+Missouri Baptist Hospital
+Johnson Rehab
+CMH
+Abbott Hospital
+MAHASKA COUNTY HOSPITAL
+SMHFC
+Community Health
+CityMemorial
+Wytheville Sanitarium Hospital
+SPENCER
+NAMC - Central WV Clinic
+Belleview Convalescent Hospital
+Heritage Residence
+DGH
+SMMC
+LGH
+Carolinas Medical Center-Mercy
+EFS
+Klickitat Valley Hospital
+WILLOW GARDEN CARE CENTER
+LRC
+DEER LODGE CLINIC
+Saint Olaf Hospital
+Mediquik
+MVH
+Westlake
+RHR
+PMC
+Janesville Clinic
+Bloomfield Care Center
+Oakridge State
+Brookwood Hospital
+HBH
+Tenacre Foundation Nursing Home
+HH
+Wausau Memorial Hospital
+FRANCISCAN HEALTH CENTER
+GRETNA COUNTY CENTER
+Folsom Convalescent
+BMC
+MJH
+Brooksville Regional Hospital
+KCM
+BMA
+Atlantic North Rehabilitation Center
+WMMC
+MPC
+Hale Memorial Hospital
+RANKIN GENERAL HOSPITAL
+GRANITE COUNTY MEMORIAL HOSPITAL
+SCH
+Franciscan Health Center
+Janesville
+Bowne Hospital
+Ludlow Medical Center
+CAMPBELL
+Sparks County Clinic
+ROSELAND COMMUNITY HOSPITAL
+MC
+Northwest Hospital
+Victor Cullen State Hospital
+RFPC
+Elders Home
+Mount San Rafael Hospital
+Harper Hospital
+SLH
+BS
+Osteopathic Medical Center
+HOB
+DLC
+SOUT SIDE
+Promptcare
+Tuburculosis Hospital
+CCH
+Colonial Manor
+Wheeling Clinic
+UGM
+NAMC
+PINELLAS GENERAL HOSPITAL
+Harmon Medical Rehabilitation Hospital
+Pennsylvania Hospital
+Willow Gardens Care - Columbus
+MERCY CARE CENTER
+FSH
+LC
+SRH
+OCC
+VAN WERT COUNTY HOSPITAL
+Newport
+OCHILTREE GENERAL HOSPITAL
+Griffin Memorial Hospital
+Eldora Nursing Rehab Center
+ODC
+BETHANY BRETHREN HOSPITAL
+Glenn Helen
+WGCC
+SAC
+Souther Millway Hospital
+Comfrey Clinic
+Helena Hospital
+MMC
+Hendry Hospital
+YGH
+Hometown Medical
+Dixmont State Hospital
+LOUISIANA AVENUE MEDICAL CENTER
+GIBSON COMMUNITY HOSPITAL
+Grace Cottage
+LOVELAND
+DHN
+TIPTREE
+DCHC
+McCook Clinic
+Mariners Hospital
+Cooley Dickinson Hospital
+Bonner General Hospital
+Glenbeigh Hospital
+HMH
+Pan American Hospital
+FAMILY HEALTH CLINIC
+CMC
+Jewish Hospital
+MeritCare Clinic
+TRIBAL HEALTH DEPARTMENT
+GRC
+FHO
+Connerstone Regional Hospital
+VALLEY COUNTY HOSPITAL
+DH
+HDH
+MSTMC
+Ocilla Hospital
+Stallworth Rehabilitation Hospital
+Danville State Hospital
+Johnson County Home
+Riverside Family Practice Center
+EDUCARE-FARGO
+LANCASTER MEMORIAL HOSPITAL
+RCH
+IMC
+Middle Tennessee Institute
+SVRHC
+CLAIBORNE
+Atlantic North
+Buzan County Clinic
+McDonough County Nursing Home
+Brookwood Nursing Home
+GRETNA COUNTYHIROPRACTIC CENTER
+Burlington Obstetrics Gynecology Center
+OGH
+PARK VIEW HOSPITAL
+Educare-Pullman
+INDEPENDENT
+Regional Medical Center Bayonet Point
+ICMA
+SPENCER STATE HOSPITAL
+BCC
+Eitel Hospital
+Beechwood
+LCC
+Dunn County Associates
+Waverly
+Saline Community Hospital
+Central Buffalo Hospital
+Brooks Hospital
+Payson Hospital
+Vermillion
+HGH
+CHC
+LMH
+Forest Hills Center
+Jones Hospital
+RH
+Pioneer Home
+MTR
+parkview haven
+RDC
+Boulder County Hospital
+Elizabethtown State Hospital
+West Memorial Infirmary
+COLLINGSWORTH GENERAL HOSPITAL
+SSH
+Titonka
+Shenandoah Hospital
+Colonial Haven
+Saint Francis Outpatient Center
+Cooley
+NH
+Heritage Of Bridgeport
+South Side Hospital
+Rochester State Hospital
+University Hospital
+Mitchel Memorial Hospital
+Southside Community Hospital
+Minnie Hamilton Health Care Center
+TNA
+Leake County Memorial Hospital
+PVH
+LOGWOOD
+Trimont Health Care Center
+Claiborne
+Saint Josephs Hospital Of Atlanta
+HSC
+HEARTLAND COUNTY CLINIC
+Hilton Head Medical Center
+LEPROSARIUM
+BBH
+Lew Healthcare Clinic
+HAWTHORNE STATE HOSPITAL
+Doctors Hospital North
+hadley memorial hospital
+Elm Hill Nursing Home
+Montgomery Infirmary
+Stonybrook
+GRETNA CHIROPRACTIC CENTER
+VALLEJO GENERAL HOSPITAL
+Parkview Memorial Hospital
+PMH
+United Methodist Behavioral Hospital
+NSCC
+YORK CONVALESCENT HOSPITAL
+Linden Health Care Center
+Fairview-Southdale Hospital
+Abbeville General Hospital
+Fort Washington Hospital
+BNMC
+Kessel Group Home
+Bellflower Doctors Hospital
+Loudes Hospital
+NGH
+ZUCKER HILLSIDE HOSPITAL
+Welsh General Hospital
+GUADALUPE VALLEY HOSPITAL
+Natchaug Hospital
+Cocke County Baptist Hospital
+STANTON NURSING HOME
+Sawtelle Veterans Hospital
+Mount Ascutney Hospital
+Community Hospital
+Mondovi Hospital
+Tribal
+Colorow
+AGH
+DSH
+MANAMANA
+PCH
+YCH
+FLH
+Kelliher Care Center
+THD
+Boaz Nursing Home
+Friends Hospital
+Central WV
+Pioneer Hospital
+Crest Nursing Home
+Algiers Medical Center
+Dibble General Hospital
+Missouri River Manor
+BAUER CHIROPRACTIC CLINIC
+Lahey Clinic
+Glancy Memorial Hospital
+Saint Marys Infirmary
+Ridge Family Practice
+LIMA
+Rusk State Hospital
+GLENNON MEMORIAL HOSPITAL
+Ohc
+HEARTHSTONE
+SMI
+Simmons
+Butte Ridge Associates
+Titonka Care Center
+Cottage Sanatorium
+Gibson Community Hospital
+ILC
+ESH
+KEKELA
+Grant Clinic
+WDMC
+GNC
+Elm Hills
+Paoli Memorial Hospital
+PSH
+Florida Hospital Orland
+SHMC
+GMS
+KCC
+Midwest Eire Center
+CentralBuffalo
+hmc
+DCGH
+HRMC
+Marion Memorial Hospital
+Folsom Convalescent Hospital
+Lowell General Hospital
+Zollman Community Clinic
+Cancer Center
+SH
+CAPE CORAL HOSPITAL
+SFOC
+Ochiltree General
+Homestead
+RSC
+ANRC
+FHV
+CLERMONT COUNTY HOSPITAL
+Willow Gardens Care Center
+MC nursing home
+Lynchburg City Health Department
+MARY
+REDBUD COMMUNITY HOSPITAL
+IMS
+Laurens Memorial Hospital
+FPM
+MSH
+Livingstone Homes
+BHCC
+Forest Hils
+BKMC
+McDonough County Rehabilitation Center
+EDUCARE-PULLMAN
+Glenn Helen Infirmary
+LOVELAND MEMEORIAL HOSPITAL
+Redbud Community Hospital
+GCM
+BNH
+Fairfield
+Brighton
+BII
+KJH
+BOGC
+NASHUA MEMORIAL HOSPITAL
+FMC
+Santa Barbara General Hospital
+VGH
+MESA VISTA HOSPITAL
+BARTON MEMORIAL HOSPITAL
+PMSC
+Spencer State Hospital
+Berrien
+PERHAM MERITCARE CLINIC
+Health Care Center
+LCMH
+Windsor Hospital
+KELLIHER CARE CENTER
+Wytheville South Hospital
+ALGIERS MEDICAL CENTER
+NORTHLAND MEDICAL CLINIC
+PGH
+WGH
+AMC
+Duluth Clinic
+HALE MEMORIAL HOSPITAL
+Crete Municipal Hospital
+Willow Pointe Assisted Living Center
+Jefferson County Memorial Hospital
+Evanston Hospital
+SEH
+Boys Town National
+MH
+Mercy
+Educare-Fargo
+Bayonet Point
+PICH
+P
+Mid Coast
+Healthwin Hospital
+JCH
+Illini Community Hospital
+LAURENS MEMORIAL HOSPITAL
+ZCC
+Otis Hospital
+Falls Clinic
+STANTON NURSING
+Houghton Community Health Center
+Rio Grande State Center
+Adventist Home
+Seymour Hospital
+CDH
+Duluth Clinic-Hermantown
+Gwinnett County Hospital
+Appalachian Hospital
+Titonka Cardiovascular Care Center
+RAH
+Halcyon House
+Loma Linda Community Hospital
+District Four State Hospital
+SOUTH BAY HOSPITAL
+Tri-City Hospital
+NMH
+Linden Health
+GCC
+Kimball County Manor
+Jensen Clinic
+GBH
+FHC
+CBC
+Spencer
+Cochran Memorial Hospital
+SLHC
+MERCY
+Vallejo General
+Hometown Medical Center
+mcc
+PINELLAS
+KESSEL GROUP HOME
+CH
+Stuart Hospital
+Moton Hospital
+NIOBRARA VALLEY HOSPITAL
+KCH
+Ochsner
+NYSH
+PCC
+AMA
+San Luis Obispo County General Hospital
+Legacy Center
+HRC
+Gordon Hospital
+CGH
+Wytheville South
+Senior Care Clinic
+RGSC
+Georgian Clinic
+Lorain Community Hospital
+McDonough County Rehabilitation
+North Greenville Hospital
+WETZEL COUNTY HOSPITAL
+ELIZABETHTOWN STATE HOSPITAL
+RSH
+UMH
+Smithers Albany Center
+PROMPTCARE
+Lamoni Nursing Rehabilitation Center
+NYSH-East
+Immanuel Medical Center
+Saint John River District Hospital
+Sawtooth Cancer Clinic
+Independent Living Center
+HPC
+HCC
+Leprosarium
+Guttenberg Care Center
+LMC
+SMC
+Johnson Family Vision Care
+Shady Rest Care Center
+Ireton Medical Clinic
+North Iowa Oral Surgery Center
+Stone-Wheeling
+PH
+Marshalltown Pond Clinic
+Saint Mary's Hospital Fallbright Center
+PACIFIC COAST HOSPITAL
+Ridge Family Practice Center
+Florence Heights Village
+Bryan W Whitfield Memorial Hospital
+WMH
+Keely Institute
+Florida Hospital Orlando
+OXFORD DELTA CLINIC
+Texas Medical Center
+GC
+OMC
+Protestant Home Hospital
+MEDIQUIK
+CURTIS MEDICAL CENTER
+MCCLENDON MEDICAL CENTER
+Mid Coast Hospital
+BRA
+McCook Erie Clinic
+NSH
+EFHC
+LCFMC
+DISTRICT FOUR
+BOWNE
+Graduate Hospital
+SAH
+OKMH
+Solemar Hospital
+PromptCare
+Vermilion Hospital
+SNH
+Christy Clinic
+MTCI
+NMC
+Frankenmuth Care
+Louisville Care Center
+Elm Hills Nursing Home
+Stanton Hospital
+KND
+Missouri Baptist
+ZOLLMAN
+Hearthstone
+Beaumont Hospital
+Deaconess Hospital
+Homestead Hospital
+MARTHA JEFFERSON HOSPITAL
+Shady Brook Hospital
+Levine Hospital
+MSHMC
+North Penn Hospital
+Longview Hospital
+Klickitat Valley
+Tobey Hospital
+MAH
+Vereen Memorial Hospital
+Gravette Medical Center
+Humana Hospital Ville Platte
+Beloit State
+Memorial Community Hospital
+SDP
+WILSON MEDICAL CENTER
+Saint Davids Pavilion
+Blakely House
+Johnsonville Family Clinic
+Ridgewood Hospital
+Modesto State Hospital
+Dameron Hospital
+Bolingbrook Senior Home
+Southside Medical Center
+Christy
+LAGRANGE
+PAH
+Highland Park Care Center
+Fahey Center
+Siouxland
+Bainbridge State Hospital
+MCH
+Forest Hills
+Boys Town National Research Hospital
+NORTHWEST IOWA HEALTH CENTER

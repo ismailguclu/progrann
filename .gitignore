@@ -139,8 +139,8 @@ dmypy.json
 /i2b2_evaluation_scripts
 
 # code scripts
-/code/preprocessing/special_cases.py
-/code/preprocessing/rules.py
+/i2b2/preprocessing/special_cases.py
+/i2b2/preprocessing/rules.py
 
 # VS studio stuff
 .vscode/

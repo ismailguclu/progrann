@@ -83,6 +83,7 @@ for fn in files:
         Doc.set_extension("fn", default=fn)
         doc = nlp(new_text)
         
+        # why this?
         for pipe in nlp.pipe_names:
             if pipe not in STANDARD_PIPE:
                 nlp.remove_pipe(pipe)

@@ -16,18 +16,6 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from random import random
 
-class SpacyBaseline():
-
-    def __init__(self, model_name, spm="nl_core_news_lg"):
-        self.model_name = model_name
-        self.model = spacy.load(spm)
-
-    def label(self, documents):
-        for doc, labels in documents:
-            output = self.model(doc)
-            print("Entities", [(e.text, e.label_) for e in output.ents])
-            print(labels)
-
 class CRF():
 
     def __init__(self, model_name, output="crf_output.txt", weights_file="crf_weights.pkl"):
@@ -44,6 +32,7 @@ class CRF():
 
     def train(self, documents):
         X_train, y_train = self._get_features(documents)
+        print(X_train[0][0])
         self.model.fit(X_train, y_train)
         return
 
@@ -78,7 +67,7 @@ class CRF():
 
     def label(self, documents):
         X_test, y_test = self._get_features(documents)
-        y_pred = self.model.predict(X_test, y_test)
+        y_pred = self.model.predict(X_test)
         return y_pred
 
     def _get_features(self, data):
@@ -94,6 +83,11 @@ class BILSTM():
         self.output = output
         self.input_size = 0
         self.max_length = 0
+        self.original_length = []
+        checkpoint_filepath = './model_bilstm.{epoch:02d}-{val_loss:.2f}.hdf5'
+        self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+            filepath=checkpoint_filepath,
+            save_best_only=True)
 
     def train(self, docs):
         words, tags = self._get_word_tag_vocab(docs)
@@ -104,7 +98,9 @@ class BILSTM():
         for d in docs:
             self.input_size += 1
             tmpX, tmpY = [], []
-            if len(d) > self.max_length:
+            tmp_length = len(d)
+            self.original_length.append(tmp_length)
+            if tmp_length > self.max_length:
                 self.max_length = len(d)
             for tok,_,tag in d:
                 tmpX.append(word2idx[tok])
@@ -120,14 +116,31 @@ class BILSTM():
         self.model.summary()
         self.model.compile(optimizer="adam", loss="categorical_crossentropy", 
                             metrics=[keras.metrics.Precision(), keras.metrics.Recall()])
-        self.model.fit(X_pad, y_pad, epochs=50, verbose=2)
+        self.model.fit(X_pad, y_pad, epochs=5, verbose=2, validation_split=0.2,
+                        callbacks=[self.model_checkpoint_callback])
         result = self.model.predict(X_pad)
-        print(result)
+        result = self._post_processing(result)
+        return self._get_bio_sequence(result, idx2tag)
+
+    def _post_processing(self, sequences):
+        new_sequences = []
+        for i in range(len(self.original_length)):
+            tmp = sequences[i][:self.original_length[i]] 
+            new_sequences.append(tmp)
+        return new_sequences
+
+    def _get_bio_sequence(self, sequences, idx2tag):
+        all_sequences = []
+        for seq in sequences:
+            tmp = []
+            for i in seq:
+                tmp.append(idx2tag[i.item()])
+            all_sequences.append(tmp)
+        return all_sequences
 
     def _get_mapping(self, vocab):
         mapping_1 = {i:idx+1 for idx,i in enumerate(vocab)}
         mapping_2 = {idx+1:i for idx,i in enumerate(vocab)}
-        print(mapping_1, mapping_2)
         return mapping_1, mapping_2
 
     def _get_word_tag_vocab(self, docs):
@@ -141,9 +154,9 @@ class BILSTM():
 
     def _get_model(self):
         inputs = keras.Input(shape=(self.max_length,))
-        x = layers.Embedding(input_dim=5000, output_dim=5, mask_zero=True)(inputs)
+        x = layers.Embedding(input_dim=50000, output_dim=16, mask_zero=True)(inputs)
         x = layers.Bidirectional(layers.LSTM(64, input_shape=(self.max_length,1), return_sequences=True))(x)
-        x = layers.Bidirectional(layers.LSTM(64, input_shape=(self.max_length,1), return_sequences=True))(x)
+        #x = layers.Bidirectional(layers.LSTM(64, input_shape=(self.max_length,1), return_sequences=True))(x)
         outputs = layers.TimeDistributed(layers.Dense(1, activation="softmax"))(x)
         return keras.Model(inputs, outputs)
 
@@ -158,9 +171,6 @@ class BILSTM():
 # for doc in test_file:
 #     result = json.loads(doc)
 #     DATA.append((result['text'], result['labels']))
-
-# spacy = SpacyBaseline("spacy")
-# spacy.label(DATA)
 
 # test = [[("I", 1, "O"), ("am", 1, "O"), ("Ismail", 1, "B-PER"), ("Guclu", 1, "I-PER")],
 #         [("I", 1, "O"), ("am", 1, "O"), ("Ismail", 1, "B-PER")],

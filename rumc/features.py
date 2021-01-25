@@ -22,6 +22,17 @@ def helper_word(word, doc, i, j, features, before):
     })
     return features
 
+def bag_of_words(word, doc, i, features):
+    unigram = word
+    bigram = word + " " + doc[i+1][0]
+    trigram = word + " " + doc[i+1][0] + " " + doc[i+2][0] 
+    features.update({
+        'unigram': unigram,
+        'bigram': bigram,
+        'trigram': trigram,
+    })
+    return features
+
 def token2features(doc, i):
     word = doc[i][0]
     postag = doc[i][1]
@@ -38,7 +49,7 @@ def token2features(doc, i):
         'word.isdigit()': word.isdigit(),
         'postag': postag,
         'postag[:2]': postag[:2],
-        'lemma': lemmatizer.lemmatize(word)
+        # 'lemma': lemmatizer.lemmatize(word)
     }
     # Take context into account: -2 tokens
     if i > 0 and i < CONTEXT:
@@ -51,6 +62,7 @@ def token2features(doc, i):
     if i < len(doc)-CONTEXT:
         for j in range(1, CONTEXT+1):
             features = helper_word(word, doc, i, j, features, False)
+        features = bag_of_words(word, doc, i, features)
 
     return features
 

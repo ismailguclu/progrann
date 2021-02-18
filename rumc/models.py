@@ -12,8 +12,9 @@ import json
 import spacy
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+from tensorflow.keras import layers, Input, Model
+from tensorflow.keras.metrics import Precision, Recall
+import tensorflow_addons as tfa
 from random import random
 
 class CRF():
@@ -32,7 +33,6 @@ class CRF():
 
     def train(self, documents):
         X_train, y_train = self._get_features(documents)
-        print(X_train[0][0])
         self.model.fit(X_train, y_train)
         return
 
@@ -75,15 +75,17 @@ class CRF():
         y = [doc2labels(s) for s in data]
         return (x, y)
 
+# https://www.kaggle.com/bhagone/bi-lstm-for-ner
 class BILSTM():
 
-    def __init__(self, model_name, output="bilstm_output.txt", weights_file="bilstm_weights.pkl"):
+    def __init__(self, model_name, labels, output="bilstm_output.txt", weights_file="bilstm_weights.pkl"):
         self.model_name = model_name
         self.weights = weights_file
         self.output = output
         self.input_size = 0
         self.max_length = 0
         self.original_length = []
+        self.nr_labels = labels
         checkpoint_filepath = './model_bilstm.{epoch:02d}-{val_loss:.2f}.hdf5'
         self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
@@ -108,14 +110,18 @@ class BILSTM():
             X.append(tmpX)
             y.append(tmpY)
 
-        X_pad = tf.keras.preprocessing.sequence.pad_sequences(X, padding="post")
-        y_pad = tf.keras.preprocessing.sequence.pad_sequences(y, padding="post")
-        y_pad = y_pad.reshape(self.input_size, self.max_length, 1)
+        X_pad = tf.keras.preprocessing.sequence.pad_sequences(X, padding="post", dtype="float64")
+        y_pad = tf.keras.preprocessing.sequence.pad_sequences(y, padding="post", dtype="float64")
+        
+        print(X_pad[0].shape)
+        print(y_pad[0].shape)
+        y_pad = [tf.keras.utils.to_categorical(y, num_classes=len(self.nr_labels)+1) for y in y_pad] 
+        y_pad = np.reshape(y_pad, (self.input_size, self.max_length, len(self.nr_labels)+1))         
 
         self.model = self._get_model()
         self.model.summary()
         self.model.compile(optimizer="adam", loss="categorical_crossentropy", 
-                            metrics=[keras.metrics.Precision(), keras.metrics.Recall()])
+                            metrics=[Precision(), Recall()])
         self.model.fit(X_pad, y_pad, epochs=5, verbose=2, validation_split=0.2,
                         callbacks=[self.model_checkpoint_callback])
         result = self.model.predict(X_pad)
@@ -134,7 +140,8 @@ class BILSTM():
         for seq in sequences:
             tmp = []
             for i in seq:
-                tmp.append(idx2tag[i.item()])
+                o = np.argmax(i, axis=-1)
+                tmp.append(idx2tag[o.item()])
             all_sequences.append(tmp)
         return all_sequences
 
@@ -153,28 +160,10 @@ class BILSTM():
         return words_vocab, tags_vocab
 
     def _get_model(self):
-        inputs = keras.Input(shape=(self.max_length,))
-        x = layers.Embedding(input_dim=50000, output_dim=16, mask_zero=True)(inputs)
-        x = layers.Bidirectional(layers.LSTM(64, input_shape=(self.max_length,1), return_sequences=True))(x)
-        #x = layers.Bidirectional(layers.LSTM(64, input_shape=(self.max_length,1), return_sequences=True))(x)
-        outputs = layers.TimeDistributed(layers.Dense(1, activation="softmax"))(x)
-        return keras.Model(inputs, outputs)
-
-# DATA = []
-# STANDARD_PIPE = ["tagger", "parser"]
-# path = os.getcwd() + "/data-rumc/"
-
-# with open(path + "anon_ground_truth_sample.jsonl", "r") as f:
-#     test_file = list(f)
-
-# # Extract the actual text and the PHI
-# for doc in test_file:
-#     result = json.loads(doc)
-#     DATA.append((result['text'], result['labels']))
-
-# test = [[("I", 1, "O"), ("am", 1, "O"), ("Ismail", 1, "B-PER"), ("Guclu", 1, "I-PER")],
-#         [("I", 1, "O"), ("am", 1, "O"), ("Ismail", 1, "B-PER")],
-#         [("I", 1, "O"), ("am", 1, "O"), ("Ismail", 1, "B-PER"), ("Guclu", 1, "I-PER"), ("SOME", 1, "O"), ("SAY", 1, "O")]]
-
-# bilstm = BILSTM("bilstm")
-# bilstm.train(test)
+        inputs = Input(shape=(self.max_length,))
+        x = layers.Embedding(input_dim=50000, output_dim=100, mask_zero=True)(inputs)
+        x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
+        outputs = layers.TimeDistributed(layers.Dense(len(self.nr_labels)+1, activation="sigmoid"))(x)
+        #crf = tfa.layers.CRF(len(self.nr_labels))
+        #outputs = crf(x)
+        return Model(inputs, outputs)

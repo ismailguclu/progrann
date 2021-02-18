@@ -12,9 +12,15 @@ class EntityPlacer(object):
                 count_ending_spaces = len(e_text) - len(e_text.rstrip(" "))
                 if count_leading_spaces > 0:
                     new_start = start - count_leading_spaces
-                    span = doc.char_span(new_start, end, label=label)
+                    span = doc.char_span(new_start, end, label=label, alignment_mode='expand')
                 elif count_ending_spaces > 0:
                     new_end = end + count_ending_spaces
-                    span = doc.char_span(start, new_end, label=label)
-            doc.ents = list(doc.ents) + [span]
+                    span = doc.char_span(start, new_end, label=label, alignment_mode='expand')
+            try:
+                doc.ents = list(doc.ents) + [span]
+            except:
+                self.faulty = -1
         return doc
+
+    def get_faulty(self):
+        return self.faulty

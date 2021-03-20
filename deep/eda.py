@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import argparse
+import numpy as np
 
 LABELS = {}
 
@@ -31,16 +32,19 @@ def get_distr_labels(doc):
             if l in LABELS:
                 LABELS[l] += 1
             else:
-                LABELS[l] = 0
+                LABELS[l] = 1
     return
 
 def main(args):
     df = get_data()
-    dev = df.sample(frac=0.1, random_state=42)
+    train, val, dev = np.split(
+                        df.sample(frac=1, random_state=42), 
+                        [int(.7*len(df)), int(.9*len(df))]
+                        )
     if args.distr:
-        dev['labels'].apply(get_distr_labels)
+        val['labels'].apply(get_distr_labels)
         print(LABELS)
-    nr_items = len(dev)
+    nr_items = len(val)
 
     if args.index:
         x = args.index

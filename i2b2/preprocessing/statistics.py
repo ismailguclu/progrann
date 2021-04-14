@@ -17,6 +17,7 @@ for fn in files_train:
     tags_set.update(tags_type)
     tags_list.extend(tags_type)
 
+print(tags_set)
 print("Number of unique tags in train data: " + str(len(tags_set)))
 print("Number of PHI instances in train data: " + str(len(tags_list)))
 print(Counter(tags_list))
@@ -37,6 +38,7 @@ for fn in files_test:
     tags_list_t.extend(tags_type_t)
 
 print()
+print(tags_set_t)
 print("Number of unique tags in test data: " + str(len(tags_set_t)))
 print("Number of PHI instances in test data: " + str(len(tags_list_t)))
 print(Counter(tags_list_t))

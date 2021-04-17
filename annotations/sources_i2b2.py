@@ -3,6 +3,7 @@ from dateutil.parser import parse
 import re
 import preprocessor
 import spacy
+import geograpy
 
 ENTITIES = ['HEALTHPLAN', 'LOCATION-OTHER', 'ORGANIZATION', 'DEVICE', 'STREET', 
             'CITY', 'ZIP', 'HOSPITAL', 'MEDICALRECORD', 'IDNUM', 'FAX', 'DATE', 
@@ -26,6 +27,14 @@ fn.close()
 with open("./data/states.txt") as fn:
     STATES = fn.read().split("\n")
 fn.close()
+
+# https://raw.githubusercontent.com/grammakov/USA-cities-and-states/master/us_cities_states_counties.csv
+# with open("./data/us_states_cities.txt") as fn:
+#     lines = fn.readlines()
+#     STATES = []
+#     for item in lines:
+#         STATES.append(item.split("|")[0])
+# fn.close()
 
 with open("./data/professions.txt") as fn:
     PROFESSIONS = fn.read().split("\n")
@@ -52,7 +61,7 @@ def is_patient(name, start, length):
 def lf_date_1(doc):
     "Pattern matching: 25/12/2020, 25-12-2020 etc."
     labels = []
-    dates = re.finditer(r'(\d+[/-]\d+/[\-]d+)', doc)
+    dates = re.finditer(r'\d+[/-]\d+[/-]\d+', doc)
     for d in dates:
         s, e = d.start(), d.end()
         if is_date(doc[s:e]):
@@ -63,7 +72,7 @@ def lf_date_1(doc):
 def lf_date_2(doc):
     "Pattern matching: December 25, 2020 etc."
     labels = []
-    dates = re.finditer(r'([A-Z](?:[a-zA-Z]+))(\s*[0-9]+)(,\s[0-9]+)', doc)
+    dates = re.finditer(r'([A-Z](?:[a-zA-Z]+)\s*\d{1,2},\s[0-9]+)', doc)
     for d in dates:
         s, e = d.start(), d.end()
         if is_date(doc[s:e]):
@@ -74,7 +83,7 @@ def lf_date_2(doc):
 def lf_date_3(doc):
     "Pattern matching: 25 December 2020 etc."
     labels = []
-    dates = re.finditer(r'([0-9]+)(\s[A-Z](?:[a-zA-Z]+))(\s[0-9]+)', doc)
+    dates = re.finditer(r'(\d{1,2}\s[A-Z](?:[a-zA-Z]+)\s\d{4})', doc)
     for d in dates:
         s, e = d.start(), d.end()
         if is_date(doc[s:e]):
@@ -86,8 +95,9 @@ def lf_hospital_1(doc):
     "Knowledge base: find matching tokens that are hospitals."
     labels = []
     for h in HOSPITALS:
-        if h in doc:
-            hosp = re.finditer(h, doc)
+        if h in doc and len(h) > 3:
+            reg = "(?<=\s)" + h + "(?=\S|\s)"
+            hosp = re.finditer(reg, doc)
             for i in hosp:
                 s, e = i.start(), i.end()
                 labels.append((s, e, "HOSPITAL", doc[s:e]))
@@ -139,8 +149,8 @@ def lf_model_1(doc):
     for ent in d.ents:
         if ent.label_ in ENTITIES:
             labels.append((ent.start_char, ent.end_char, ent.label_, ent.text))
-        if ent.label_ in CONVERSION:
-            labels.append((ent.start_char, ent.end_char, CONVERSION[ent.label_], ent.text))
+        # if ent.label_ in CONVERSION:
+        #     labels.append((ent.start_char, ent.end_char, CONVERSION[ent.label_], ent.text))
     return labels
 
 @labeling_function()
@@ -246,7 +256,7 @@ def lf_username_1(doc):
 @labeling_function()
 def lf_street_1(doc):
     labels = []
-    streets = re.finditer(r"\d{2,3}\s\w+\s\w+(?=\n)", doc)
+    streets = re.finditer(r"\d{2,4}\s\w+\s\w+(?=\n)", doc)
     for st in streets:
         s, e = st.start(), st.end()
         labels.append((s, e, "STREET", doc[s:e]))
@@ -264,11 +274,37 @@ def lf_address_1(doc):
         city = splits[0]
         labels.append((s, s+len(city), "CITY", city))
         state_zip = splits[1].split()
-        state, zip = state_zip[0], state_zip[1]
+        state, zip_code = state_zip[0], state_zip[1]
         s_state = s + txt.index(state)
         labels.append((s_state, s_state+2, "STATE", state))
-        s_zip = s + txt.index(zip)
-        labels.append((s_zip, s_zip+5, "ZIP", zip))
+        s_zip = s + txt.index(zip_code)
+        labels.append((s_zip, s_zip+5, "ZIP", zip_code))
+    return labels
+
+@labeling_function()
+def lf_address_2(doc):
+    labels = []
+    places = geograpy.get_geoPlace_context(text=doc)
+    for city in places.cities:
+        s = doc.find(city)
+        if s != -1:
+            labels.append((s, s+len(city), "CITY", city))
+    
+    for country in places.countries:
+        s = doc.find(country)
+        if s != -1:
+            labels.append((s, s+len(country), "COUNTRY", country))
+    return labels
+
+@labeling_function()
+def lf_city_1(doc):
+    labels = []
+    for c in CITIES:
+        if c in doc:
+            cnt = re.finditer(c, doc)
+            for i in cnt:
+                s, e = i.start(), i.end()
+                labels.append((s, e, "CITY", doc[s:e]))
     return labels
 
 def get_i2b2_sources():
@@ -290,7 +326,9 @@ def get_i2b2_sources():
           lf_url_1,
           lf_username_1,
           lf_street_1,
-          lf_address_1
+          lf_address_1,
+          lf_address_2
+          #lf_city_1
     ]
     return lf
 

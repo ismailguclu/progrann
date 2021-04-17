@@ -8,30 +8,21 @@ import preprocessor
 import sources
 import numpy as np
 import os
-from snorkel.labeling.model import LabelModel
-
 
 def args_parser():
     parser = argparse.ArgumentParser(description='Run Snorkel on unlabeled data.')
     parser.add_argument("--rumc", action="store_true", help="Load RUMC data.")
     parser.add_argument("--i2b2", action="store_true", help="Load i2b2 data.")
     parser.add_argument("--train", action="store_true", help="Train Snorkel token model.")
-    parser.add_argument("--test", action="store_true", help="Test Snorkel token model.")
     parser.add_argument("--dev", action="store_true", help="Evaluate Snorkel token model on dev set.")
     parser.add_argument("--path", help="Absolute path to data file/folder.")
     parser.add_argument("--extra", action="store_true", help="Experiment 2: effect of additional data.")
     return parser.parse_args()
 
-def evaluate_partial(sequences, gold):
-    print("F1", sequence_labeling.f1_score(gold, sequences))
-    print("PARTIAL", sequence_labeling.partial_f1_score(gold, sequences))
-    print(sequence_labeling.classification_report(gold, sequences, digits=4))
-    return
-
 def main(args):
     if args.i2b2:
         CARDINALITY = 25
-        VERSION = "18-1"
+        VERSION = "18-2"
         DATA= "i2b2"
         all_text, all_labels, all_bio = preprocessor.run()
         df = pd.DataFrame({"text":all_text, "labels":all_labels, "bio":all_bio})
@@ -69,16 +60,17 @@ def main(args):
         print("Snorkel train model: done.")
 
     if args.extra:
-        df_extra = helper.get_rumc_data("500_extra_shuffled.jsonl")
-        fractions = [0, 25, 50, 75, 100]
+        df_test = helper.get_rumc_data("500_extra_shuffled.jsonl")
+        fractions = [25, 50, 75, 100]
         f1_scores = []
+        print("Starting training splits...")
         for f in fractions:
-            extra = df_extra.sample(frac=f/100, random_state=42)
-            extra_train = pd.concat([train, extra], sort=False)
-            label_model, df_snorkel_train = sources.train(extra, gold_labels=False)
-            L_train, _, _, _ = sources.helper_snorkel_representation(df)
+            subtrain = train.sample(frac=f/100, random_state=42)
+            #extra_train = pd.concat([train, extra], sort=False)
+            label_model, df_snorkel_subtrain = sources.train(subtrain, gold_labels=False)
+            L_train, _, _, _ = sources.helper_snorkel_representation(df_snorkel_subtrain)
             annotations_pred = label_model.predict(L=L_train)
-            b_train, s_train = helper.replace_tags_data(extra_train, annotations_pred)
+            b_train, s_train = helper.replace_tags_data(subtrain, annotations_pred)
 
             val_rumc = list(zip(val.text, val.labels))
             b_val, s_val = helper.bio_tagging(val_rumc)
@@ -88,19 +80,8 @@ def main(args):
             crf_y_pred_val = crf.label(b_val)
             f1_score = sequence_labeling.f1_score(s_val, crf_y_pred_val)
             f1_scores.append(f1_score)
-        
+            print("Current split: {} and corresponding F1 score (val): {}".format(f, f1_score))
         print("F1 SCORES: ", f1_scores)
-    
-    if args.test:
-        df_test = helper.get_rumc_data("test_clean_350.jsonl")
-        df_test["data"] = list(zip(df_test.text, df_test.labels))
-        label_model = LabelModel(verbose=False)
-        label_model.load("./models/rumc-label-model-9-5.pkl")
-        L_test,_,_,_ = sources.helper_snorkel_representation(df_test)
-        annotations_pred_test = label_model.predict(L=L_test)
-        b_val, s_val = helper.replace_tags_data(df_test, annotations_pred_test)
-        bg_val, sg_val = helper.bio_tagging(df_test["data"].to_list())
-        evaluate_partial(s_val, sg_val)
     return
 
 if __name__ == "__main__":

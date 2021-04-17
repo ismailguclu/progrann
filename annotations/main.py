@@ -22,7 +22,7 @@ import pandas as pd
 from tensorflow import keras
 from tensorflow.keras import layers
 from nltk.stem.wordnet import WordNetLemmatizer 
-from random import random
+import random
 import helper
 from snorkel.labeling.model import LabelModel
 import sequence_labeling
@@ -61,6 +61,24 @@ def get_snorkel_rumc_data():
     annotations_pred_val = label_model.predict(L=L_val)
     b_val, s_val = helper.replace_tags_data(validation, annotations_pred_val)
     return b_train, s_train, train['data'].to_list(), b_val, s_val, validation["data"].to_list()
+
+def get_snorkel_i2b2_data():
+    df = pd.read_pickle("./snorkel-data/i2b2-snorkel-18-2.pkl")
+    df['data'] = list(zip(df.text, df.labels))
+    train, validation, dev = np.split(
+                                df.sample(frac=1, random_state=42), 
+                                [int(.7*len(df)), int(.9*len(df))]
+                                )
+    L_train, Y = helper.helper_snorkel_representation(train, 18)
+    label_model = LabelModel(verbose=False)
+    label_model.load("./models/i2b2-label-model-18-2.pkl")
+    annotations_pred = label_model.predict(L=L_train)
+    b_train, s_train = helper.replace_tags_data_i2b2(train, annotations_pred)
+
+    L_val, Y_val = helper.helper_snorkel_representation(validation, 18)
+    annotations_pred_val = label_model.predict(L=L_val)
+    b_val, s_val = helper.replace_tags_data_i2b2(validation, annotations_pred_val)
+    return b_train, s_train, train['bio'].to_list(), b_val, s_val, validation["bio"].to_list()
 
 def get_rumc_data(path):
     data = []
@@ -103,6 +121,22 @@ def split_train_val_dev(bio, sequences):
     s_train, s_val, s_dev = train["seq"].to_list(), val["seq"].to_list(), dev["seq"].to_list()
     return b_train, b_val, b_dev, s_train, s_val, s_dev
 
+def run_subset_data(b_train, s_train, b_val, s_val):
+    f1_scores = []
+    fractions = [25, 50, 75, 100]
+    print("Starting training splits...")
+    random.seed(42)
+    for f in fractions:
+        b_sub, s_sub = zip(*random.sample(list(zip(b_train, s_train)), int(len(b_train)/100 * f)))
+        crf = models.CRF("crf")
+        crf.validate(b_sub)             
+        crf_y_pred_val = crf.label(b_val)
+        f1_score = sequence_labeling.f1_score(s_val, crf_y_pred_val)
+        f1_scores.append(f1_score)
+        print("Current split: {} and corresponding F1 score (val): {}".format(f, f1_score))
+    print("F1 SCORES: ", f1_scores)
+    return
+
 def statistics_data(sequences):
     nr_of_tokens = 0
     nr_of_phi_tokens = 0
@@ -127,7 +161,9 @@ def args_parser():
     parser.add_argument("--i2b2", action="store_true", help="Load i2b2 data.")
     parser.add_argument("--crf", action="store_true", help="Load CRF model.")
     parser.add_argument("--bilstm", action="store_true", help="Load bi-LSTM model.")
-    parser.add_argument("--srumc", action="store_true", help="Load Snorkel model and train model on using WS.")
+    parser.add_argument("--extra", action="store_true", help="Run experiment with subsets of data.")
+    parser.add_argument("--srumc", action="store_true", help="Load Snorkel model and train model on using WS (rumc).")
+    parser.add_argument("--si2b2", action="store_true", help="Load Snorkel model and train model on using WS (i2b2).")
     return parser.parse_args()
 
 def main(args):
@@ -168,8 +204,23 @@ def main(args):
         bg_val, sg_val = helper.bio_tagging(gold_val)
         LABELS = RUMC_LABELS_EN
         print("Snorkel generative model performance on validation set.")
-        evaluate(s_val, sg_val, LABELS)
-        #evaluate_partial(s_val, sg_val)
+        #evaluate(s_val, sg_val, LABELS)
+        evaluate_partial(s_val, sg_val)
+
+    if args.si2b2:
+        print("Loading data...")
+        b_train, s_train, bio_train, b_val, s_val, bio_val = get_snorkel_i2b2_data()
+        gold_bio_val = helper.extract_bio_type(bio_val)
+        sg_val = helper.get_i2b2_sequences(gold_bio_val)
+        # LABELS = 0 # fix this pls
+        LABELS = RUMC_LABELS
+        print("Snorkel generative model performance on validation set.")
+        evaluate(s_val, sg_val, args.output, LABELS)
+        evaluate_partial(s_val, sg_val)
+
+    if args.extra:
+        print("Running experiment...")
+        run_subset_data(b_train, s_train, b_val, s_val)
 
     if args.crf:
         print("Starting CRF...")
@@ -181,10 +232,10 @@ def main(args):
     if args.bilstm:
         bilstm = models.BILSTM("bilstm", LABELS)
         bilstm_y_val_pred, bilstm_y_val = bilstm.train(b_train, b_val)    
-        #evaluate(bilstm_y_val_pred, bilstm_y_val, args.output, LABELS)
-        print(bilstm_y_val_pred[0])
-        print(s_val[0])
-        print(len(bilstm_y_val_pred) == len(s_val))
+        evaluate(bilstm_y_val_pred, bilstm_y_val, args.output, LABELS)
+        # print(bilstm_y_val_pred[0])
+        # print(s_val[0])
+        # print(len(bilstm_y_val_pred) == len(s_val))
         #print(bilstm_y_val)
         #print(classification_report(bilstm_y_val, bilstm_y_val_pred))
 

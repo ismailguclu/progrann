@@ -14,9 +14,13 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, Input, Model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Input, Embedding, Bidirectional, LSTM, Dense, TimeDistributed
 from tensorflow.keras.metrics import Precision, Recall
 import tensorflow_addons as tfa
 from random import random
+
+from crf import CRF as TCRF
 
 
 # https://sklearn-crfsuite.readthedocs.io/en/latest/index.html
@@ -80,7 +84,7 @@ class CRF():
 # https://www.kaggle.com/bhagone/bi-lstm-for-ner
 class BILSTM():
 
-    def __init__(self, model_name, labels, output="bilstm_output.txt", weights_file="bilstm_weights.pkl"):
+    def __init__(self, model_name, labels, output="./final-1/bilstm_output.txt", weights_file="./final-1/bilstm_weights.pkl"):
         self.model_name = model_name
         self.weights = weights_file
         self.output = output
@@ -96,7 +100,8 @@ class BILSTM():
         docs = train + val
         words, tags = self._get_word_tag_vocab(docs)
         word2idx, idx2word = self._get_mapping(words)
-        tag2idx, idx2tag = self._get_mapping(tags)
+        tag2idx, idx2tag = self._get_mapping(self.nr_labels)
+        print(idx2tag)
         X_train, y_train, train_og_lengths  = self._split_data(train, word2idx, tag2idx)
         X_train_pad = tf.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=self.max_length, padding="post", dtype="float64")
         y_train_pad = tf.keras.preprocessing.sequence.pad_sequences(y_train, maxlen=self.max_length, padding="post", dtype="float64")
@@ -138,7 +143,6 @@ class BILSTM():
                 tmpY.append(tag2idx[tag])
             X.append(tmpX)
             y.append(tmpY)
-        print("MAX LENGTH", self.max_length)
         return X, y, og_length
 
     def _post_processing(self, sequences, lengths):
@@ -173,10 +177,18 @@ class BILSTM():
         return words_vocab, tags_vocab
 
     def _get_model(self):
-        inputs = Input(shape=(self.max_length,))
-        x = layers.Embedding(input_dim=50000, output_dim=100, mask_zero=True)(inputs)
-        x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
-        outputs = layers.TimeDistributed(layers.Dense(len(self.nr_labels)+1, activation="sigmoid"))(x)
-        #crf = tfa.layers.CRF(len(self.nr_labels))
-        #outputs = crf(x)
-        return Model(inputs, outputs)
+        # inputs = Input(shape=(self.max_length,))
+        # x = layers.Embedding(input_dim=50000, output_dim=100, input_length=self.max_length, mask_zero=True)(inputs)
+        # x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
+        # x = layers.TimeDistributed(layers.Dense(50, activation="softmax"))(x)
+        # crf = KCRF(len(self.nr_labels))
+        # outputs = crf(x)
+
+        model = Sequential()
+        model.add(Embedding(input_dim=50000, output_dim=100, input_length=self.max_length, mask_zero=True))
+        model.add(Bidirectional(LSTM(64, return_sequences=True)))
+        model.add(TimeDistributed(Dense(len(self.nr_labels)+1, activation="softmax")))
+
+        crf = TCRF(len(self.nr_labels)+1)
+        model.add(crf)
+        return model

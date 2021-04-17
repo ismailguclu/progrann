@@ -19,6 +19,11 @@ ENTITIES_DICT = {-1:"ABSTAIN", 0:"DATE", 1:"PERSON", 2:"TIME",
 ENTITIES_DICT_2 = {"<DATUM>":"DATE", "<PERSOON>":"PERSON", "<TIJD>":"TIME", 
                    "<PLAATS>":"LOCATION", "<TELEFOONNUMMER>":"PHONE", 
                    "<LEEFTIJD>":"AGE", "<ZNUMMER>":"ZNUMMER"}
+ENTITIES_DICT_i2b2 = {-1:'ABSTAIN', 0:'HEALTHPLAN', 1:'LOCATION-OTHER', 2:'ORGANIZATION', 
+                      3:'DEVICE', 4:'STREET', 5:'CITY', 6:'ZIP', 7:'HOSPITAL', 
+                      8:'MEDICALRECORD', 9:'IDNUM', 10:'FAX', 11:'DATE', 12:'PHONE', 
+                      13:'COUNTRY', 14:'URL', 15:'PROFESSION', 16:'STATE', 17:'PATIENT', 
+                      18:'EMAIL', 19:'DOCTOR', 20:'BIOID', 21:'AGE', 24:'USERNAME'} # why 24 suddenly?
 
 def get_i2b2_data(data, data_path):
    tmp_data = []
@@ -41,6 +46,18 @@ def get_i2b2_sequences(data):
             tmp.append(ent[2])
         all_sequences.append(tmp)
     return all_sequences
+
+def extract_bio_type(bio):
+    all_bio_types = []
+    for elem in bio:
+        temp = []
+        for el in elem:
+            if el[2] == "O":
+                temp.append((el[0], el[1], "O"))
+            else:
+                temp.append((el[0], el[1], el[2] + "-" + el[3]))
+        all_bio_types.append(temp)
+    return all_bio_types
 
 def get_rumc_data(fn):
     data = []
@@ -144,6 +161,51 @@ def replace_tags_data(df, pred):
         
         for i in range(len(temp_sequence)):
             temp_report[i] = temp_report[i] + (temp_sequence[i],)
+        all_reports.append(temp_report)
+    return all_reports, all_sequences
+
+def replace_tags_data_i2b2(df, pred):
+    idx = 0
+    text = df["text"].to_list()
+    bio = df["bio"].to_list()
+    x_tokens = df["X"].to_list()
+    all_sequences = []
+    all_reports = []
+
+    for i in range(len(df)):
+        elem = x_tokens[i]
+        text_elem = text[i]
+        selection = pred[idx:idx+len(elem)]
+        temp_sequence = []
+        prev_elem = -1
+
+        # BIO tagging WS annotated labels 
+        # https://pythonprogramming.net/using-bio-tags-create-named-entity-lists/    
+        for s in selection:
+            if s == -1:
+                temp_sequence.append("O")
+                prev_elem = -1
+            if s != -1 and prev_elem == -1:
+                temp_sequence.append("B-" + ENTITIES_DICT_i2b2[s])
+                prev_elem = s
+            elif s == prev_elem and prev_elem != -1:
+                temp_sequence.append("I-" + ENTITIES_DICT_i2b2[s])
+                prev_elem = s
+            elif prev_elem != -1 and prev_elem != s: 
+                temp_sequence.append("B-"+ ENTITIES_DICT_i2b2[s])
+                prev_elem = s
+        all_sequences.append(temp_sequence)
+        idx += len(elem)
+
+    temp_report = []
+    # Create tuple: (text, POS, BIO-tag)
+    for b in bio:
+        for elem in b:
+            temp_report.append((elem[0], elem[1]))
+
+    for seq in all_sequences:
+        for k in range(len(temp_sequence)):
+            temp_report[k] = temp_report[k] + (temp_sequence[k],)
         all_reports.append(temp_report)
     return all_reports, all_sequences
 

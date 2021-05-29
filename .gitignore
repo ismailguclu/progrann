@@ -141,6 +141,8 @@ dmypy.json
 # code scripts
 /i2b2/preprocessing/special_cases.py
 /i2b2/preprocessing/rules.py
+/deep 
+/rumc 
 
 # VS studio stuff
 .vscode/

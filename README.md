@@ -14,8 +14,7 @@ To make use of this code, create virtual environment using the following instruc
 │   └── training
 ├── data-rumc
 ├── models
-├── snorkel-data
-└── tests
+└── snorkel-data
 ```
 * cd to /path/to/progrann/
 

@@ -23,7 +23,7 @@ We have employed two methods to deidentify clinical records: CRF and BI-LSTM.
 The following commands are useful to reproduce the results:
 
 * To prepare i2b2 dataset: `python annotations/preprocessor.py` which creates a folder named `training-df` in `data-i2b2`.
-* To train discriminative model: `python annotations/main.py --[bilstm, crf] --[i2b2, rumc], --path [./data-i2b2/training-df/, ./data-rumc/]`
+* To train discriminative model: `python annotations/main.py --[bilstm, crf] --[i2b2, rumc] --path [./data-i2b2/training-df/, ./data-rumc/]`
 
 ## Commands Experiment 2: programmatic annotations using weak supervision
 As we have seen so far, the results are good on both datasets.

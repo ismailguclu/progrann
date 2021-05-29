@@ -1,27 +1,16 @@
-import os
-import csv
 import sklearn_crfsuite
 import scipy.stats
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn_crfsuite import scorers
 from sklearn_crfsuite import metrics
-from features import doc2features, doc2labels, doc2tokens
+from features import doc2features, doc2labels
 import pickle
-import json
-import spacy
-import pandas as pd
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, Input, Model
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, Embedding, Bidirectional, LSTM, Dense, TimeDistributed
-from tensorflow.keras.metrics import Precision, Recall
 import tensorflow_addons as tfa
 from random import random
-
-from crf import CRF as TCRF
-
+import fasttext
 
 # https://sklearn-crfsuite.readthedocs.io/en/latest/index.html
 class CRF():
@@ -43,7 +32,7 @@ class CRF():
         self.model.fit(X_train, y_train)
         return
 
-    def validate(self, documents, k=3, n_iter=1):
+    def validate(self, documents, k=3, n_iter=100):
         X_train, y_train = self._get_features(documents)
         params_space = {
             'c1': scipy.stats.expon(scale=0.5),
@@ -84,49 +73,66 @@ class CRF():
 # https://www.kaggle.com/bhagone/bi-lstm-for-ner
 class BILSTM():
 
-    def __init__(self, model_name, labels, output="./final-1/bilstm_output.txt", weights_file="./final-1/bilstm_weights.pkl"):
+    def __init__(self, model_name, labels, emb_file, output="./output/bilstm_output.txt", weights_file="./output/bilstm_weights.pkl"):
         self.model_name = model_name
         self.weights = weights_file
         self.output = output
+        self.emb_file = emb_file
         self.input_size = 0
-        self.max_length = 985
+        self.max_length = 4923
+        self.nr_of_words = 0
         self.nr_labels = labels
-        checkpoint_filepath = './model_bilstm.{epoch:02d}-{val_loss:.2f}.hdf5'
+        checkpoint_filepath = './output/model_bilstm.{epoch:02d}-{val_loss:.2f}.hdf5'
         self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
             save_best_only=True)
 
-    def train(self, train, val):
-        docs = train + val
+    def train(self, train, val, test):
+        docs = train + val + test
         words, tags = self._get_word_tag_vocab(docs)
         word2idx, idx2word = self._get_mapping(words)
+        self.nr_of_words = len(word2idx)
         tag2idx, idx2tag = self._get_mapping(self.nr_labels)
-        print(idx2tag)
+        
+        embedding_matrix = self._get_embedding_matrix(word2idx)
+
+        # Redo this part pls
         X_train, y_train, train_og_lengths  = self._split_data(train, word2idx, tag2idx)
         X_train_pad = tf.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=self.max_length, padding="post", dtype="float64")
-        y_train_pad = tf.keras.preprocessing.sequence.pad_sequences(y_train, maxlen=self.max_length, padding="post", dtype="float64")
+        y_train_pad = tf.keras.preprocessing.sequence.pad_sequences(y_train, maxlen=self.max_length, padding="post", dtype="float64", value=tag2idx["O"])
         y_train_pad = [tf.keras.utils.to_categorical(y, num_classes=len(self.nr_labels)+1) for y in y_train_pad] 
         y_train_pad = np.reshape(y_train_pad, (self.input_size, self.max_length, len(self.nr_labels)+1))   
 
         X_val, y_val, val_og_lengths  = self._split_data(val, word2idx, tag2idx)
         X_val_pad = tf.keras.preprocessing.sequence.pad_sequences(X_val, maxlen=self.max_length, padding="post", dtype="float64")
-        y_val_pad = tf.keras.preprocessing.sequence.pad_sequences(y_val, maxlen=self.max_length, padding="post", dtype="float64")
+        y_val_pad = tf.keras.preprocessing.sequence.pad_sequences(y_val, maxlen=self.max_length, padding="post", dtype="float64", value=tag2idx["O"])
         y_val_pad = [tf.keras.utils.to_categorical(y, num_classes=len(self.nr_labels)+1) for y in y_val_pad] 
         y_val_pad = np.reshape(y_val_pad, (self.input_size, self.max_length, len(self.nr_labels)+1))          
 
-        # print(X_train_pad.shape)
-        # for i in y_train_pad:
-        #     print(i.shape)
-        self.model = self._get_model()
+        X_test, y_test, test_og_lengths  = self._split_data(test, word2idx, tag2idx)
+        X_test_pad = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=self.max_length, padding="post", dtype="float64")
+        y_test_pad = tf.keras.preprocessing.sequence.pad_sequences(y_test, maxlen=self.max_length, padding="post", dtype="float64", value=tag2idx["O"])
+        y_test_pad = [tf.keras.utils.to_categorical(y, num_classes=len(self.nr_labels)+1) for y in y_test_pad] 
+        y_test_pad = np.reshape(y_test_pad, (self.input_size, self.max_length, len(self.nr_labels)+1))     
+
+        self.model = self._get_model(embedding_matrix)
         self.model.summary()
         self.model.compile(optimizer="adam", loss="categorical_crossentropy", 
-                            metrics=[Precision(), Recall()])
-        self.model.fit(X_train_pad, y_train_pad, epochs=5, verbose=2, validation_split=0.2,
-                        callbacks=[self.model_checkpoint_callback])
-        result = self.model.predict(X_val_pad)
-        result = self._post_processing(result, val_og_lengths)
-        y_val_pred = self._get_bio_sequence(result, idx2tag)
-        return y_val_pred, y_val
+                            metrics=["accuracy"])
+        es_callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3, min_delta=1e-4)
+        self.model.fit(X_train_pad, y_train_pad, verbose=0, epochs=150, batch_size=32, validation_data=(X_val_pad, y_val_pad),
+                        callbacks=[es_callback])  
+        result = self.model.predict(X_test_pad) 
+        result = self._post_processing(result, test_og_lengths)
+        y_test_pred = self._get_bio_sequence(result, idx2tag)
+        return y_test_pred, y_val
+
+    def _get_embedding_matrix(self, words):
+        ft = fasttext.load_model(self.emb_file)
+        embedding_matrix = np.zeros((self.nr_of_words+1, 300))
+        for w,i in words.items():
+            embedding_matrix[i] = ft.get_word_vector(w)
+        return embedding_matrix
 
     def _split_data(self, docs, word2idx, tag2idx):
         X, y, og_length = [], [], []
@@ -174,21 +180,22 @@ class BILSTM():
             for word,_,tag in d:
                 words_vocab.add(word)
                 tags_vocab.add(tag)
+        with open("./word-vocab.txt", "wb") as fn:
+            pickle.dump(words_vocab, fn)
+        with open("./tag-vocab.txt", "wb") as fn:
+            pickle.dump(tags_vocab, fn)
+
         return words_vocab, tags_vocab
 
-    def _get_model(self):
-        # inputs = Input(shape=(self.max_length,))
-        # x = layers.Embedding(input_dim=50000, output_dim=100, input_length=self.max_length, mask_zero=True)(inputs)
-        # x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
-        # x = layers.TimeDistributed(layers.Dense(50, activation="softmax"))(x)
-        # crf = KCRF(len(self.nr_labels))
-        # outputs = crf(x)
+    def _get_model(self, embedding_matrix):
+        embedding_layer = layers.Embedding(self.nr_of_words + 1,
+                                    300,
+                                    weights=[embedding_matrix],
+                                    input_length=self.max_length,
+                                    trainable=False)
 
-        model = Sequential()
-        model.add(Embedding(input_dim=50000, output_dim=100, input_length=self.max_length, mask_zero=True))
-        model.add(Bidirectional(LSTM(64, return_sequences=True)))
-        model.add(TimeDistributed(Dense(len(self.nr_labels)+1, activation="softmax")))
-
-        crf = TCRF(len(self.nr_labels)+1)
-        model.add(crf)
-        return model
+        inputs = Input(shape=(self.max_length,))
+        embedded_seq = embedding_layer(inputs)
+        x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(embedded_seq)
+        outputs = layers.TimeDistributed(layers.Dense(len(self.nr_labels)+1, activation="softmax"))(x)
+        return Model(inputs, outputs)

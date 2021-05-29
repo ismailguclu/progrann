@@ -1,11 +1,6 @@
-import re
-import spacy
-import json
-import pandas as pd
 import numpy as np
 import sources_rumc
 import sources_i2b2
-from snorkel.labeling import labeling_function
 from snorkel.labeling.model import LabelModel
 from scipy.sparse import dok_matrix, vstack, csr_matrix
 from snorkel.labeling import LFAnalysis

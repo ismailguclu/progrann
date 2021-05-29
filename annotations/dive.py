@@ -1,4 +1,3 @@
-from random import random
 import pandas as pd
 import argparse
 import models
@@ -7,7 +6,6 @@ import helper
 import preprocessor
 import sources
 import numpy as np
-import os
 
 def args_parser():
     parser = argparse.ArgumentParser(description='Run Snorkel on unlabeled data.')

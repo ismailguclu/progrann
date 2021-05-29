@@ -1,4 +1,3 @@
-import re
 import os
 import csv
 import spacy
@@ -7,10 +6,7 @@ import pandas as pd
 import numpy as np
 from EntityPlacer import EntityPlacer
 from spacy.language import Language
-from snorkel.labeling import labeling_function
-from snorkel.labeling.model import LabelModel
 from scipy.sparse import dok_matrix, vstack, csr_matrix
-from snorkel.labeling import LFAnalysis
 
 nlp = spacy.load("nl_core_news_lg")
 nlp.remove_pipe("ner")

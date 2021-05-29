@@ -3,7 +3,6 @@ import spacy
 import os
 import pandas
 from spacy.tokens import Span, Doc
-from EntityPlacer import EntityPlacer
 import tokenizer_regex
 import special_cases
 import special_merge

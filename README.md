@@ -36,3 +36,6 @@ First, apply the labeling functions on the clinical reports using: `python annot
 Now we can use the following commands:
 * To train discriminative model using weakly tagged training data: `python annotations/main.py --[si2b2, srumc] --[crf, bilstm]`
 * To experiment with increasing weakly tagged training data: `python annotations/main.py --[si2b2, srumc] --extra [crf, bilstm]` 
+
+## Contact
+Please create a new issue for code related problems. For all other information requests, you can mail me at <i.guclu@live.nl>.

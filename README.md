@@ -1,4 +1,4 @@
-# Programmatically generating annotations for de-identification of clinical data
+# [ARCHIVED] Programmatically generating annotations for de-identification of clinical data
 Source code for master thesis.
 
 ## Instructions
